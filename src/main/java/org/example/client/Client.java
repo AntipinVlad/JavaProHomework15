@@ -12,7 +12,7 @@ public class Client {
     private BufferedReader serverReader;
     private PrintWriter writer;
     private Scanner scanner;
-    private boolean serverFinished = false;
+    private boolean isConnectionClosed = false;
 
     public void run(String host, int port) {
         try (Socket clientSocket = new Socket(host, port)) {
@@ -23,7 +23,7 @@ public class Client {
             Thread serverReaderThread = new Thread(this::readFromServer);
             serverReaderThread.start();
 
-            while (!serverFinished) {
+            while (!isConnectionClosed) {
                 writeToServer();
             }
 
@@ -50,7 +50,7 @@ public class Client {
             while ((serverLine = serverReader.readLine()) != null) {
                 System.out.println("Повідомлення сервера: " + serverLine);
                 if (serverLine.contains("З'єднання буде зачинено")) {
-                    serverFinished = true;
+                    isConnectionClosed = true;
                     break;
                 }
             }
